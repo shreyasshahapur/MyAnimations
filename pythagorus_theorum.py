@@ -1,5 +1,7 @@
 from manimlib.imports import *
 
+# INCOMPLETE
+
 class Pythagorus(Scene):
     CONFIG = {
             "r":COLOR_MAP["RED_D"],
@@ -43,4 +45,9 @@ class Pythagorus(Scene):
             Write(s3)
             ) 
         self.wait(1)
+
+
+
+
+
 

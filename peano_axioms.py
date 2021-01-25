@@ -96,6 +96,10 @@ class Peano(Scene):
         )
         self.wait(0.5)
 
+        # 
+
+        
+
     def axiom3(self):
         pass
 

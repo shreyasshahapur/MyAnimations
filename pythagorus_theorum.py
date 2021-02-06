@@ -46,6 +46,15 @@ class Pythagorus(Scene):
             ) 
         self.wait(1)
 
+        # Reference for refactoring
+        # # triangle = Polygon(ORIGIN, 3*UP, 4*RIGHT)
+        # triangle = Polygon(ORIGIN, 3 * UP + 2 * LEFT, 4 * RIGHT + DOWN)
+        #
+        # s1 = Square(side_length=4).next_to(triangle, DOWN, buff=0)
+        # s2 = Square(side_length=3).next_to(triangle, LEFT, buff=0)
+        # s3 = Square(side_length=5).next_to(triangle, UP, buff=0, aligned_edge=LEFT) \
+        #     .rotate(-np.arctan(3 / 4), about_point=triangle.get_critical_point(UP + LEFT))
+
 
 
 

@@ -1,5 +1,4 @@
 from manim import *
-from tools.grid import ScreenGrid
 
 # NEED TO RECONFIGURE FOR MANIMCE
 class Peano(Scene):

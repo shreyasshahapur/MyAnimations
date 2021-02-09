@@ -1,7 +1,7 @@
-from manimlib.imports import *
+from manim import *
 from tools.grid import ScreenGrid
 
-
+# NEED TO RECONFIGURE FOR MANIMCE
 class Peano(Scene):
     CONFIG = {
         "r": COLOR_MAP["RED_D"],
@@ -18,6 +18,13 @@ class Peano(Scene):
         "axiom2_first_text": TextMobject("2. If n is a natural number, "),
         "axiom2_last_text": TextMobject("then n++ is a natural number"),
         "axiom3_text": TextMobject("3. 0 is not the successor of any natural number"),
+        "axiom4_first_temp_text": TextMobject("4. If n, m are natural numbers and n ≠ m..."),
+        "axiom4_first_text": TextMobject("4. If n, m are natural numbers and n ≠ m,"),
+        "axiom4_second_text": TextMobject("then n++ ≠ m++"),
+        "axiom4_third_temp_text": TextMobject("equivalently, if n++ = m++..."),
+        "axiom4_third_text": TextMobject("equivalently, if n++ = m++,"),
+        "axiom4_fourth_text": TextMobject("then n = m"),
+        "axiom4_final_text": TextMobject("4. Different natural numbers must have different successors"),
 
         "zero_dot": Dot(),
         "zero_num": TextMobject("0"),
@@ -25,6 +32,10 @@ class Peano(Scene):
         "n_num": TextMobject("n"),
         "succ_n_dot": Dot(),
         "succ_n_num": TextMobject("n++"),
+        "m_dot": Dot(),
+        "m_num": TextMobject("m"),
+        "succ_m_dot": Dot(),
+        "succ_m_num": TextMobject("m++"),
     }
 
     def construct(self):
@@ -191,9 +202,9 @@ class Peano(Scene):
         self.play(MoveToTarget(succ_n), run_time=2)
         self.wait(0.5)
 
-        axiom3_motivations = TextMobject("...it can even be on zero!")
+        axiom3_motivations = TextMobject("...meaning it can be on zero!")
         self.play(Write(axiom3_motivations))
-        self.wait(0.5)
+        self.wait(1)
 
         succ_n.generate_target()
         succ_n.target.shift(4.5*LEFT).set_color(self.r)
@@ -202,12 +213,14 @@ class Peano(Scene):
             FadeOut(self.zero_num),
             run_time=2
         )
-        self.wait(0.5)
+        self.wait(1)
 
         axiom3_motivations.generate_target()
-        axiom3_motivations.target = TextMobject("Hence, we introduce the axiom...")
+        axiom3_motivations_1 = TextMobject("This shouldn't be allowed,")
+        axiom3_motivations_2 = TextMobject("leading us to the third axiom...").next_to(axiom3_motivations_1, DOWN)
+        axiom3_motivations.target = VGroup(axiom3_motivations_1, axiom3_motivations_2)
         self.play(MoveToTarget(axiom3_motivations))
-        self.wait(1)
+        self.wait(3.5)
 
         self.play(ReplacementTransform(axiom3_motivations, self.axiom3_text))
 
@@ -221,10 +234,18 @@ class Peano(Scene):
         self.wait(1)
 
         self.axiom3_text.generate_target()
-        self.axiom3_text.target.scale(0.75).next_to(self.axiom2_last_text, DOWN, aligned_edge=LEFT) \
+        axiom3_text_1 = TextMobject("3. 0 is not the successor of")
+        axiom3_text_2 = TextMobject("any natural number").next_to(axiom3_text_1, DOWN, buff=0.1, aligned_edge=LEFT)
+
+        self.axiom3_text.target = VGroup(axiom3_text_1, axiom3_text_2)\
+            .scale(0.75)\
+            .next_to(self.axiom2_last_text, DOWN, aligned_edge=LEFT)\
             .set_color(self.b)
 
-        self.play(MoveToTarget(self.axiom3_text))
+        self.play(
+            MoveToTarget(self.axiom3_text),
+            run_time=1
+        )
 
     def axiom4(self):
         pass

@@ -13,7 +13,7 @@ class GridAxes(VMobject):
         x_axis = Line(start=self.width * LEFT, end=self.width * RIGHT).set_color(self.color_axes)
         y_axis = Line(start=self.height * DOWN, end=self.height * UP).set_color(self.color_axes)
 
-        axes = VGroup(x_axis, y_axis)
+        axes = VGroup(x_axis, y_axis).set_stroke(width=2)
         self.add(axes)
 
         for x in range(-width, width + 1):
@@ -45,20 +45,20 @@ class Grid(GridAxes):
         x_lines = VGroup()
         for y in (list(range(-self.height, 0)) + list(range(1, self.height + 1))):
             x_lines.add(DashedLine(start=self.width * LEFT + y * DOWN, end=self.width * RIGHT + y * DOWN,
-                                   dash_length=0.25, positive_space_ratio=0.5)
+                                   dash_length=0.12, positive_space_ratio=0.6)
                         .set_color(self.color_lines))
-        x_lines.set_stroke(width=0.75)
+        x_lines.set_stroke(width=0.3)
 
         # Lines parallel to the y axis
         y_lines = VGroup()
         for x in (list(range(-self.width, 0)) + list(range(1, self.width + 1))):
             y_lines.add(DashedLine(start=self.height * UP + x * RIGHT, end=self.height * DOWN + x * RIGHT,
-                                   dash_length=0.25, positive_space_ratio=0.5).set_color(self.color_lines))
-        y_lines.set_stroke(width=0.75)
+                                   dash_length=0.12, positive_space_ratio=0.6).set_color(self.color_lines))
+        y_lines.set_stroke(width=0.3)
 
         self.add(x_lines)
         self.add(y_lines)
 
 class Temp(Scene):
     def construct(self):
-        self.play(ShowCreation(Grid()), run_time=2)
+        self.add(Grid())

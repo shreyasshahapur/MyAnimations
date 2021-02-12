@@ -53,8 +53,9 @@ class BasicGraph(VMobject):
             else:
                 label_image = label_type(text=v, **label_default)
 
-            vertex_image.scale(vertex_and_label_scale).move_to(vertices[v])
-            label_image.move_to(FUTURA_CENTERING_POS[v]).scale(vertex_and_label_scale).shift(vertices[v])
+            vertex_image.scale(vertex_and_label_scale).shift(vertices[v])
+            label_image.move_to(FUTURA_CENTERING_POS[v])\
+                .scale(vertex_and_label_scale, about_point=ORIGIN).shift(vertices[v])
             self.add(vertex_image)
             self.add(label_image)
 
@@ -67,9 +68,9 @@ class BasicGraph(VMobject):
     # for adding elements to graph
     @staticmethod
     def basic_transform_expand(self, g1, g2, run_time_in=1, run_time_out=0.05):
-        BasicGraph.simple_transform(self, g1, g2, run_time_in=run_time_in, run_time_out=run_time_out)
+        BasicGraph.basic_transform(self, g1, g2, run_time_in=run_time_in, run_time_out=run_time_out)
 
     # for removing elements from graph
     @staticmethod
     def basic_transform_contract(self, g1, g2, run_time_in=0.05, run_time_out=1):
-        BasicGraph.simple_transform(self, g1, g2, run_time_in=run_time_in, run_time_out=run_time_out)
+        BasicGraph.basic_transform(self, g1, g2, run_time_in=run_time_in, run_time_out=run_time_out)

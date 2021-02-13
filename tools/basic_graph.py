@@ -44,8 +44,92 @@ class BasicGraph(VMobject):
     Examples
     --------
 
+    First, we create an unlabeled graph.
 
+    .. manim:: UnlabeledGraph
 
+        class UnlabeledGraph(Scene):
+            def construct(self):
+                graph = BasicGraph(
+                    vertices={"A": [0, 0], "B": [1, 0], "C": [1, 1],
+                              "D": [0, 1], "E": [-1, 1]},
+                    edges=[("A", "B"), ("B", "C"), ("C", "D"), ("D", "A"),
+                            ("A", "E"), ("D", "E")],
+                    label_type=None,
+                    vertex_default=Dot()
+                )
+
+                self.add(graph)
+
+    We can similarly create labeled graphs.
+
+    .. manim:: LabeledGraph
+
+        class LabeledGraph(Scene):
+            def construct(self):
+                graph = BasicGraph(
+                    vertices={"A": [0, 0], "B": [2, 0], "C": [2, 2],
+                              "D": [0, 2], "E": [-1, 1]},
+                    edges=[("A", "B"), ("B", "C"), ("C", "D"), ("D", "A"),
+                           ("A", "E"), ("E", "D")],
+                    vertex_and_label_scale=0.75
+                )
+
+                self.add(graph)
+
+    We can change certain vertices and edges.
+
+    .. manim:: ChangeConfigs
+
+        class ChangeConfigs(Scene):
+            def construct(self):
+                graph = BasicGraph(
+                    vertices={"A": [0, 0], "B": [2, 0], "C": [2, 2],
+                              "D": [0, 2], "E": [-1, 1]},
+                    edges=[("A", "B"), ("B", "C"), ("C", "D"), ("D", "A"),
+                            ("A", "E"), ("E", "D")],
+                    vertex_and_label_scale=0.75,
+                    edge_config={("A", "B"): DashedLine(),
+                                 ("B", "C"): Line(color=BLUE)},
+                    vertex_config={"E": Dot(radius=0.3),
+                                   "D": Square(side_length=0.7, fill_opacity=1,
+                                               fill_color=BLACK)},
+                    label_config={"E": {"color": BLACK}},
+                )
+                self.add(graph)
+
+    We can add nodes and edges to the graph.
+
+    .. manim:: AddingToGraph
+
+        class AddingToGraph(Scene):
+            def construct(self):
+                vertices = {"A": [0, 0], "B": [2, 0], "C": [0, 2], "D": [2, 2]}
+                edges = [("A", "B"), ("B", "C"), ("C", "D"), ("D", "A")]
+
+                g1 = BasicGraph(
+                    vertices=vertices,
+                    edges=edges,
+                    vertex_and_label_scale=0.8,
+                )
+
+                self.play(Write(g1))
+                self.wait()
+
+                vertices["E"] = [-1, 1]
+                vertices["F"] = [1, -2]
+                edges.append(("E", "A"))
+                edges.append(("E", "C"))
+                edges.append(("F", "A"))
+                edges.append(("F", "B"))
+
+                g2 = BasicGraph(
+                    vertices=vertices,
+                    edges=edges,
+                    vertex_and_label_scale=0.8,
+                )
+
+                BasicGraph.basic_transform_expand(self, g1, g2)
     """
 
     def __init__(self,
@@ -99,7 +183,9 @@ class BasicGraph(VMobject):
 
             if label_type is not None:
                 if v in label_config:
-                    label_image = label_type(text=v, **label_default.update(label_config[v]))
+                    label_attr = label_default.copy()
+                    label_attr.update(label_config[v])
+                    label_image = label_type(text=v, **label_attr)
                 else:
                     label_image = label_type(text=v, **label_default)
 

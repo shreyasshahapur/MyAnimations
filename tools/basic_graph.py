@@ -2,17 +2,63 @@ from manim import *
 
 
 class BasicGraph(VMobject):
+    """An undirected graph. Which focuses on aesthetics for teaching purposes.
+
+    Parameters
+    ----------
+
+    vertices
+        A dictionary containing the vertices names and positions (2D list).
+    edges
+        A list of edges, specified as tuples ``(u, v)`` where both ``u``
+        and ``v`` are the vertices names.
+    label_type
+        Specifies whether or not the vertices are labeled; if ``None`` vertices
+        are unlabeled. If not, it specifies the mobject class of the label
+        (default is ``Text``).
+    label_default
+        A dictionary specifying the default attributes of ``label_type``.
+    label_config
+        A dictionary containing the vertices names and corresponding attributes
+        to that label. It builds on top of the attributes contained in
+        label_default.
+    vertex_default
+        Specifies a mobject instance which will display the vertices.
+    vertex_config
+        A dictionary containing the vertices names and corresponding mobject
+        instance which will display that vertex.
+    vertex_and_label_scale
+        Scales the size of the vertices and labels together.
+    edge_default
+        Specifies a mobject instance which will display the edges.
+    edge_config
+        A dictionary containing the edges and corresponding mobject instance
+        which will display that edge.
+
+    .. note::
+
+        If label ``font=futura`` then it will automatically center the text
+        for aesthetics. Individual capital letters were centered with reference
+        to a circle of ``radius=0.5``.
+
+    Examples
+    --------
+
+
+
+    """
 
     def __init__(self,
-                 vertices={},  # includes position {"A": [1, 0], "B": [-1, -1], ... }
-                 edges=[],  # [(v1, v2), ...]
+                 vertices={},
+                 edges=[],
                  label_type=Text,
-                 label_default={"font": "futura"},  # default parameters for labels
-                 label_config={},  # adds/changes the default label parameters, for specific vertices
-                 vertex_default=Dot(color=BLUE), # default vertices
-                 vertex_config={},  # key: vertex, value: associating object
+                 label_default={"font": "futura"},
+                 label_config={},
+                 vertex_default=Circle(color=BLUE, radius=0.5, fill_opacity=1,
+                                       fill_color=BLACK),
+                 vertex_config={},
                  vertex_and_label_scale=1,
-                 edge_default=Line(),
+                 edge_default=Line().set_stroke(width=6),
                  edge_config={},
                  **kwargs
                  ):
@@ -48,21 +94,23 @@ class BasicGraph(VMobject):
             else:
                 vertex_image = vertex_default.copy()
 
-            if v in label_config:
-                label_image = label_type(text=v, **label_default.update(label_config[v]))
-            else:
-                label_image = label_type(text=v, **label_default)
-
             vertex_image.scale(vertex_and_label_scale).shift(vertices[v])
-            label_image.move_to(FUTURA_CENTERING_POS[v])\
-                .scale(vertex_and_label_scale, about_point=ORIGIN).shift(vertices[v])
             self.add(vertex_image)
-            self.add(label_image)
+
+            if label_type is not None:
+                if v in label_config:
+                    label_image = label_type(text=v, **label_default.update(label_config[v]))
+                else:
+                    label_image = label_type(text=v, **label_default)
+
+                label_image.move_to(FUTURA_CENTERING_POS[v])\
+                    .scale(vertex_and_label_scale, about_point=ORIGIN).shift(vertices[v])
+                self.add(label_image)
 
     # transforms graph g1 to g2 (only for removing and adding to the graph)
     @staticmethod
     def basic_transform(self, g1, g2, run_time_in=1, run_time_out=1):
-        self.play(Write(g2), run_time=run_time_in)
+        self.play(FadeIn(g2), run_time=run_time_in)
         self.play(FadeOut(g1), run_time=run_time_out)
 
     # for adding elements to graph

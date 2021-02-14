@@ -1,4 +1,5 @@
 from manim import *
+from tools.font_centering_pos import FUTURA_CENTERING_POS
 
 
 class BasicGraph(VMobject):
@@ -146,65 +147,119 @@ class BasicGraph(VMobject):
                  edge_config={},
                  **kwargs
                  ):
+
+        # turns the vertex positions into an np array
+        self.vertices = {vertex: np.array(pos + [0]) for vertex, pos in
+                         vertices.items()}
+        self.edges = edges
+        self.label_type = label_type
+        self.label_default = label_default
+        self.label_config = label_config
+        self.vertex_default = vertex_default
+        self.vertex_config = vertex_config
+        self.vertex_and_label_scale = vertex_and_label_scale
+        self.edge_default = edge_default
+        self.edge_config = edge_config
         VMobject.__init__(self, **kwargs)
 
-        # turns the positions into an np array
-        vertices = {vertex: np.array(pos + [0]) for vertex, pos in vertices.items()}
+        self.add(VGroup(*self.add_vertices()).set_z_index(4))
+        if self.label_type is not None:
+            self.add(VGroup(*self.add_labels()).set_z_index(5))
+        self.add(VGroup(*self.add_edges()).set_z_index(3))
 
-        # adds edges
-        for (v1, v2) in edges:
-            if (v1, v2) in edge_config:
-                edge_image = edge_config[(v1, v2)]
-            else:
-                edge_image = edge_default.copy()
-            edge_image.put_start_and_end_on(vertices[v1], vertices[v2])
-            self.add(edge_image)
-
-        # Text(letter, font="futura") centered with reference to a circle of radius=0.5
-        FUTURA_CENTERING_POS = {
-            "A": 0.04 * UP, "B": 0.03 * RIGHT, "C": 0.04 * LEFT, "D": 0.04 * RIGHT,
-            "E": 0.01 * DOWN, "F": 0.02 * RIGHT + 0.01 * DOWN, "G": ORIGIN,
-            "H": 0.004 * RIGHT, "I": ORIGIN, "J": 0.035 * LEFT, "K": 0.025 * RIGHT,
-            "L": 0.025 * RIGHT, "M": 0.02 * UP, "N": ORIGIN, "O": ORIGIN,
-            "P": 0.035 * RIGHT + 0.01 * DOWN, "Q": ORIGIN, "R": 0.03 * RIGHT,
-            "S": ORIGIN, "T": 0.03 * DOWN, "U": 0.02 * DOWN, "V": 0.045 * DOWN,
-            "W": 0.05 * DOWN, "X": 0.01 * DOWN, "Y": 0.03 * DOWN, "Z": ORIGIN
-        }
+    def add_vertices(self):
+        out_vertices = []
 
         # adds vertices and labels
-        for v in vertices:
-            if v in vertex_config:
-                vertex_image = vertex_config[v]
+        for v in self.vertices:
+            if v in self.vertex_config:
+                vertex_image = self.vertex_config[v]
             else:
-                vertex_image = vertex_default.copy()
+                vertex_image = self.vertex_default.copy()
 
-            vertex_image.scale(vertex_and_label_scale).shift(vertices[v])
-            self.add(vertex_image)
+            vertex_image.scale(self.vertex_and_label_scale) \
+                .shift(self.vertices[v])
+            out_vertices.append(vertex_image)
 
-            if label_type is not None:
-                if v in label_config:
-                    label_attr = label_default.copy()
-                    label_attr.update(label_config[v])
-                    label_image = label_type(text=v, **label_attr)
-                else:
-                    label_image = label_type(text=v, **label_default)
+        return out_vertices
 
-                label_image.move_to(FUTURA_CENTERING_POS[v])\
-                    .scale(vertex_and_label_scale, about_point=ORIGIN).shift(vertices[v])
-                self.add(label_image)
+    def add_labels(self):
+        out_labels = []
+
+        # adds vertices and labels
+        for v in self.vertices:
+            if v in self.label_config:
+                label_attr = self.label_default.copy()
+                label_attr.update(self.label_config[v])
+                label_image = self.label_type(text=v, **label_attr)
+            else:
+                label_image = self.label_type(text=v, **self.label_default)
+
+            label_image.move_to(FUTURA_CENTERING_POS[v]) \
+                .scale(self.vertex_and_label_scale, about_point=ORIGIN) \
+                .shift(self.vertices[v])
+            out_labels.append(label_image)
+
+        return out_labels
+
+    def add_edges(self):
+        out_edges = []
+
+        # adds edges
+        for (v1, v2) in self.edges:
+            if (v1, v2) in self.edge_config:
+                edge_image = self.edge_config[(v1, v2)]
+            else:
+                edge_image = self.edge_default.copy()
+            edge_image.put_start_and_end_on(self.vertices[v1],
+                                            self.vertices[v2])
+            out_edges.append(edge_image)
+
+        return out_edges
+
+    # since normal wait breaks the graphs displays, tacky solution for now
+    @staticmethod
+    def wait(self_scene, t=1):
+        self_scene.play(FadeIn(Dot(fill_opacity=0), run_time=t))
+
+    # fade in func since normal fade in doesn't work properly
+    def fade_in_graph(self, self_scene, run_time_vertices=1, run_time_edges=1):
+        self.vertices_images = VGroup(*self.add_vertices()).set_z_index(4)
+        self.labels_images = VGroup(*self.add_labels()).set_z_index(5)
+        self.edges_images = VGroup(*self.add_edges()).set_z_index(3)
+        self_scene.play(
+            FadeIn(self.vertices_images, run_time=run_time_vertices),
+            FadeIn(self.labels_images, run_time=run_time_vertices)
+        )
+        self_scene.play(FadeIn(self.edges_images, run_time=run_time_edges))
+
+    # fade out func since normal fade out doesn't work properly
+    def fade_out_graph(self, self_scene, run_time_vertices=1,
+                       run_time_edges=1):
+        self_scene.play(FadeOut(self.edges_images, run_time=run_time_edges))
+        self_scene.play(
+            FadeOut(self.vertices_images, run_time=run_time_vertices),
+            FadeOut(self.labels_images, run_time=run_time_vertices)
+        )
 
     # transforms graph g1 to g2 (only for removing and adding to the graph)
     @staticmethod
     def basic_transform(self, g1, g2, run_time_in=1, run_time_out=1):
+        g1.set_z_index(4)
+        g2.set_z_index(3)
         self.play(FadeIn(g2), run_time=run_time_in)
         self.play(FadeOut(g1), run_time=run_time_out)
+        g2.set_z_index(4)
 
     # for adding elements to graph
     @staticmethod
     def basic_transform_expand(self, g1, g2, run_time_in=1, run_time_out=0.05):
-        BasicGraph.basic_transform(self, g1, g2, run_time_in=run_time_in, run_time_out=run_time_out)
+        BasicGraph.basic_transform(self, g1, g2, run_time_in=run_time_in,
+                                   run_time_out=run_time_out)
 
     # for removing elements from graph
     @staticmethod
-    def basic_transform_contract(self, g1, g2, run_time_in=0.05, run_time_out=1):
-        BasicGraph.basic_transform(self, g1, g2, run_time_in=run_time_in, run_time_out=run_time_out)
+    def basic_transform_contract(self, g1, g2, run_time_in=0.05,
+                                 run_time_out=1):
+        BasicGraph.basic_transform(self, g1, g2, run_time_in=run_time_in,
+                                   run_time_out=run_time_out)

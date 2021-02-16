@@ -42,6 +42,11 @@ class BasicGraph(VMobject):
         for aesthetics. Individual capital letters were centered with reference
         to a circle of ``radius=0.5``.
 
+    .. note ::
+
+        Preferred methods of rendering are ``ShowCreation`` and ``Uncreate``.
+        FadeIn and FadeOut do not work very well.
+
     Examples
     --------
 
@@ -221,45 +226,3 @@ class BasicGraph(VMobject):
     @staticmethod
     def wait(self_scene, t=1):
         self_scene.play(FadeIn(Dot(fill_opacity=0), run_time=t))
-
-    # fade in func since normal fade in doesn't work properly
-    def fade_in_graph(self, self_scene, run_time_vertices=1, run_time_edges=1):
-        self.vertices_images = VGroup(*self.add_vertices()).set_z_index(4)
-        self.labels_images = VGroup(*self.add_labels()).set_z_index(5)
-        self.edges_images = VGroup(*self.add_edges()).set_z_index(3)
-        self_scene.play(
-            FadeIn(self.vertices_images, run_time=run_time_vertices),
-            FadeIn(self.labels_images, run_time=run_time_vertices)
-        )
-        self_scene.play(FadeIn(self.edges_images, run_time=run_time_edges))
-
-    # fade out func since normal fade out doesn't work properly
-    def fade_out_graph(self, self_scene, run_time_vertices=1,
-                       run_time_edges=1):
-        self_scene.play(FadeOut(self.edges_images, run_time=run_time_edges))
-        self_scene.play(
-            FadeOut(self.vertices_images, run_time=run_time_vertices),
-            FadeOut(self.labels_images, run_time=run_time_vertices)
-        )
-
-    # transforms graph g1 to g2 (only for removing and adding to the graph)
-    @staticmethod
-    def basic_transform(self, g1, g2, run_time_in=1, run_time_out=1):
-        g1.set_z_index(4)
-        g2.set_z_index(3)
-        self.play(FadeIn(g2), run_time=run_time_in)
-        self.play(FadeOut(g1), run_time=run_time_out)
-        g2.set_z_index(4)
-
-    # for adding elements to graph
-    @staticmethod
-    def basic_transform_expand(self, g1, g2, run_time_in=1, run_time_out=0.05):
-        BasicGraph.basic_transform(self, g1, g2, run_time_in=run_time_in,
-                                   run_time_out=run_time_out)
-
-    # for removing elements from graph
-    @staticmethod
-    def basic_transform_contract(self, g1, g2, run_time_in=0.05,
-                                 run_time_out=1):
-        BasicGraph.basic_transform(self, g1, g2, run_time_in=run_time_in,
-                                   run_time_out=run_time_out)

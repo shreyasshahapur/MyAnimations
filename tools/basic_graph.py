@@ -9,7 +9,8 @@ class BasicGraph(VMobject):
     ----------
 
     vertices
-        A dictionary containing the vertices names and positions (2D list).
+        A dictionary containing the vertices names and positions (2 element
+        list or tuple).
     edges
         A list of edges, specified as tuples ``(u, v)`` where both ``u``
         and ``v`` are the vertices names.
@@ -35,6 +36,11 @@ class BasicGraph(VMobject):
     edge_config
         A dictionary containing the edges and corresponding mobject instance
         which will display that edge.
+    weight
+        A dictionary containing the edges as keys and a list of 2 elements
+        containing the corresponding weight as an ``Integer`` and a pair
+        describing how the weight should be placed relative to the middle
+        of the line eg. (-0.25, 0.2).
 
     .. note::
 
@@ -150,12 +156,17 @@ class BasicGraph(VMobject):
                  vertex_and_label_scale=1,
                  edge_default=Line().set_stroke(width=6),
                  edge_config={},
+                 weight={},
                  **kwargs
                  ):
 
-        # turns the vertex positions into an np array
-        self.vertices = {vertex: np.array(pos + [0]) for vertex, pos in
-                         vertices.items()}
+        # turns the vertex positions (can be 2 element list or tuple)
+        # into an np array
+        self.vertices = {
+            vertex: np.array(list(pos) + [0]) for vertex, pos in
+            vertices.items()
+        }
+
         self.edges = edges
         self.label_type = label_type
         self.label_default = label_default
@@ -165,12 +176,13 @@ class BasicGraph(VMobject):
         self.vertex_and_label_scale = vertex_and_label_scale
         self.edge_default = edge_default
         self.edge_config = edge_config
+        self.weight = weight
         VMobject.__init__(self, **kwargs)
 
         self.add(VGroup(*self.add_vertices()).set_z_index(4))
         if self.label_type is not None:
             self.add(VGroup(*self.add_labels()).set_z_index(5))
-        self.add(VGroup(*self.add_edges()).set_z_index(3))
+        self.add(VGroup(*self.add_edges_weights()).set_z_index(3))
 
     def add_vertices(self):
         out_vertices = []
@@ -207,20 +219,34 @@ class BasicGraph(VMobject):
 
         return out_labels
 
-    def add_edges(self):
-        out_edges = []
+    def add_edges_weights(self):
+        out_edges_weights = []
 
-        # adds edges
+        # adds edges and weights
         for (v1, v2) in self.edges:
+            # add edge
             if (v1, v2) in self.edge_config:
                 edge_image = self.edge_config[(v1, v2)]
             else:
                 edge_image = self.edge_default.copy()
             edge_image.put_start_and_end_on(self.vertices[v1],
                                             self.vertices[v2])
-            out_edges.append(edge_image)
+            out_edges_weights.append(edge_image)
 
-        return out_edges
+            # add weight
+            if (v1, v2) in self.weight:
+                weight_image = Text(
+                    str(self.weight[(v1, v2)][0]),
+                    font=self.label_default["font"]
+                )
+                weight_image.move_to(edge_image) \
+                    .shift(
+                    self.weight[(v1, v2)][1][0] * RIGHT +
+                    self.weight[(v1, v2)][1][0] * UP
+                )
+                out_edges_weights.append(weight_image)
+
+        return out_edges_weights
 
     # since normal wait breaks the graphs displays, tacky solution for now
     @staticmethod

@@ -125,7 +125,7 @@ class KruskalsExample2(Scene):
         self.play(MoveToTarget(g1))
 
 
-class KruskalsExapmle1(Scene):
+class KruskalsExample1(Scene):
 
     def construct(self):
         vertices = {"A": (-8, 2), "B": [-3, 5], "C": [0, 0],

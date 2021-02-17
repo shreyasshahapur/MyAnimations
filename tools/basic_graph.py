@@ -242,7 +242,7 @@ class BasicGraph(VMobject):
                 weight_image.move_to(edge_image) \
                     .shift(
                     self.weight[(v1, v2)][1][0] * RIGHT +
-                    self.weight[(v1, v2)][1][0] * UP
+                    self.weight[(v1, v2)][1][1] * UP
                 )
                 out_edges_weights.append(weight_image)
 

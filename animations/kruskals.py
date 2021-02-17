@@ -2,15 +2,6 @@ from manim import *
 from tools.basic_graph import BasicGraph
 from tools.show_positional_values_2D import *
 
-class Temp(Scene):
-
-    def construct(self):
-        l = Line()
-        t = Text("8")
-        t.next_to(l, DOWN)
-        self.add(l, t)
-
-
 
 class Kruskals(Scene):
 
@@ -36,4 +27,3 @@ class Kruskals(Scene):
         self.play(
             ShowCreation(g1.scale(0.7, about_point=ORIGIN).shift(2.2*LEFT))
         )
-

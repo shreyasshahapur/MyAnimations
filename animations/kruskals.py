@@ -153,3 +153,13 @@ class KruskalsExapmle1(Scene):
         g1.target.shift(3 * LEFT + 2 * DOWN).scale(1, about_point=ORIGIN)
         BasicGraph.wait(self, 2)
         self.play(MoveToTarget(g1))
+
+class temp(Scene):
+    def construct(self):
+        c = Circle()
+        s = Square()
+        a = Dot()
+        d = s.get_critical_point(LEFT)
+        a.next_to(d, buff=0)
+        self.add(s)
+        self.add(a)

@@ -254,7 +254,8 @@ class BasicGraph(VMobject):
         self_scene.play(FadeIn(Dot(fill_opacity=0), run_time=t))
 
     # returns a 2D list of mobjects, each sublist consists of all the mobjects
-    # associated to an edge, ordered as [vertex1, vertex2, edge, weight]
+    # associated to an edge, ordered as
+    # [edge, vertex1, label1, vertex2, label2, weight]
     # with the sublist as a mobject being centered at the ``ORIGIN``.
     # the length of the edges in manim are computed via
     # ``edge_weight_scale * weight`` instead of the distance between the two
@@ -269,30 +270,7 @@ class BasicGraph(VMobject):
             # building the sublist consisting of all mobjects associated with
             # an edge
             out_edge = []
-
-            # add vertices and labels
             edge_weight = g.weight[(v1, v2)][0]
-            for v, direction in [(v1, LEFT), (v2, RIGHT)]:
-                # add vertex
-                if v in g.vertex_config:
-                    vertex_image = g.vertex_config[v]
-                else:
-                    vertex_image = g.vertex_default.copy()
-                vertex_image.shift(direction * edge_weight_scale * edge_weight)
-
-                # add label
-                if v in g.label_config:
-                    label_attr = g.label_default.copy()
-                    label_attr.update(g.label_config[v])
-                    label_image = g.label_type(text=v, **label_attr)
-                else:
-                    label_image = g.label_type(text=v, **g.label_default)
-
-                label_image.move_to(FUTURA_CENTERING_POS[v]) \
-                    .scale(g.vertex_and_label_scale, about_point=ORIGIN) \
-                    .shift(direction * edge_weight_scale * edge_weight)
-
-                out_edge.append(VGroup(vertex_image, label_image))
 
             # add edge
             if (v1, v2) in g.edge_config:
@@ -305,14 +283,39 @@ class BasicGraph(VMobject):
             )
             out_edge.append(edge_image)
 
-            # add weight
-            if (v1, v2) in g.weight:
-                weight_image = Text(
-                    str(g.weight[(v1, v2)][0]),
-                    font=g.label_default["font"]
+            # add vertices and labels
+            for v, direction in [(v1, LEFT), (v2, RIGHT)]:
+                # add vertex
+                if v in g.vertex_config:
+                    vertex_image = g.vertex_config[v]
+                else:
+                    vertex_image = g.vertex_default.copy()
+                vertex_image.shift(
+                    0.5 * direction * edge_weight_scale * edge_weight
                 )
-                weight_image.move_to(edge_image).shift(0.4 * UP)
-                out_edge.append(weight_image)
+
+                # add label
+                if v in g.label_config:
+                    label_attr = g.label_default.copy()
+                    label_attr.update(g.label_config[v])
+                    label_image = g.label_type(text=v, **label_attr)
+                else:
+                    label_image = g.label_type(text=v, **g.label_default)
+
+                label_image.move_to(FUTURA_CENTERING_POS[v]) \
+                    .scale(g.vertex_and_label_scale, about_point=ORIGIN) \
+                    .shift(0.5 * direction * edge_weight_scale * edge_weight)
+
+                out_edge.append(vertex_image)
+                out_edge.append(label_image)
+
+            # add weight
+            weight_image = Text(
+                str(g.weight[(v1, v2)][0]),
+                font=g.label_default["font"]
+            )
+            weight_image.move_to(edge_image).shift(0.4 * UP)
+            out_edge.append(weight_image)
 
             out.append(out_edge)
 

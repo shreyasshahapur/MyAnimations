@@ -29,11 +29,13 @@ class CircleTheorems(Scene):
         moving_lines = VGroup(moving_line1, moving_line2)
 
         right_angle = always_redraw(
-            lambda: Square().move_to(d.get_center(), aligned_edge=UP + LEFT)
-            .rotate(
+            lambda: Square().move_to(d.get_center(), aligned_edge=(DOWN + LEFT if d.get_center()[1] < 0 else UP + LEFT))
+            .rotate( (-1 if d.get_center()[1] < 0 else 1) *
                 -np.arctan(
-                    (d.get_center()[0] - dL.get_center()[0]) /
+                    abs(
+                        (d.get_center()[0] - dL.get_center()[0]) /
                     (d.get_center()[1] - dL.get_center()[1])
+                    )
                 ),
                 about_point=d.get_center()
             ).scale(
@@ -67,4 +69,9 @@ class CircleTheorems(Scene):
         self.play(
             Rotate(d, 65 * DEGREES, about_point=ORIGIN),
             run_time=1.7
+        )
+        self.wait(0.7)
+        self.play(
+            Rotate(d, -200 * DEGREES, about_point=ORIGIN),
+            run_time=5.1
         )

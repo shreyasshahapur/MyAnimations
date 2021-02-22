@@ -321,3 +321,4 @@ class BasicGraph(VMobject):
             out.append(out_edge)
 
         return out
+

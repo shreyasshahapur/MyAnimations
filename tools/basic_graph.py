@@ -187,7 +187,7 @@ class BasicGraph(VMobject):
     def add_vertices(self):
         out_vertices = []
 
-        # adds vertices and labels
+        # adds vertices
         for v in self.vertices:
             if v in self.vertex_config:
                 vertex_image = self.vertex_config[v]
@@ -203,7 +203,7 @@ class BasicGraph(VMobject):
     def add_labels(self):
         out_labels = []
 
-        # adds vertices and labels
+        # adds labels
         for v in self.vertices:
             if v in self.label_config:
                 label_attr = self.label_default.copy()
@@ -253,9 +253,9 @@ class BasicGraph(VMobject):
     def wait(self_scene, t=1):
         self_scene.play(FadeIn(Dot(fill_opacity=0), run_time=t))
 
-    # returns a 2D list of mobjects, each sublist consists of all the mobjects
-    # associated to an edge, ordered as
-    # [edge, vertex1, label1, vertex2, label2, weight]
+    # returns a 2D list of mobjects (except for weight), each sublist consists
+    # of all the mobjects associated to an edge, ordered as
+    # [weight (number), edge, vertex1, label1, vertex2, label2, weight]
     # with the sublist as a mobject being centered at the ``ORIGIN``.
     # the length of the edges in manim are computed via
     # ``edge_weight_scale * weight`` instead of the distance between the two
@@ -270,8 +270,8 @@ class BasicGraph(VMobject):
         for (v1, v2) in g.edges:
             # building the sublist consisting of all mobjects associated with
             # an edge
-            out_edge = []
             edge_weight = g.weight[(v1, v2)][0]
+            out_edge = [edge_weight]
 
             # add edge
             if (v1, v2) in g.edge_config:
@@ -286,6 +286,7 @@ class BasicGraph(VMobject):
 
             # add vertices and labels
             for v, direction in [(v1, LEFT), (v2, RIGHT)]:
+
                 # add vertex
                 if v in g.vertex_config:
                     vertex_image = g.vertex_config[v]
@@ -312,7 +313,7 @@ class BasicGraph(VMobject):
 
             # add weight
             weight_image = Text(
-                str(g.weight[(v1, v2)][0]),
+                str(edge_weight),
                 font=g.label_default["font"]
             )
             weight_image.move_to(edge_image).shift(0.4 * UP)

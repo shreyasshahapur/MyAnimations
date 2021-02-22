@@ -11,9 +11,9 @@ class CircleTheorems(Scene):
         dL = Dot().set_color(BLUE).move_to(3 * LEFT)
         dR = Dot().set_color(BLUE).move_to(3 * RIGHT)
         base = VGroup(
-                Circle().scale(3).set_color(WHITE),
-                Dot().set_color(BLUE),
-                Line(dL.get_center(), dR.get_center())
+            Circle().scale(3).set_color(WHITE),
+            Dot().set_color(BLUE),
+            Line(dL.get_center(), dR.get_center())
         )
 
         moving_line1 = always_redraw(
@@ -28,17 +28,28 @@ class CircleTheorems(Scene):
 
         moving_lines = VGroup(moving_line1, moving_line2)
 
+        # the nested if else statements are used to flip the right angle
+        # when dL and dR pass d to the other side
         right_angle = always_redraw(
-            lambda: Square().move_to(d.get_center(), aligned_edge=(DOWN + LEFT if d.get_center()[1] < 0 else UP + LEFT))
-            .rotate( (-1 if d.get_center()[1] < 0 else 1) *
+            lambda: Square()
+            # moving the right angle as the points move
+            .move_to(
+                d.get_center(),
+                aligned_edge=(
+                    DOWN + LEFT if d.get_center()[1] < 0 else UP + LEFT)
+            )
+            # rotating the right angle as the points move
+            .rotate(
+                (-1 if d.get_center()[1] < 0 else 1) *
                 -np.arctan(
                     abs(
                         (d.get_center()[0] - dL.get_center()[0]) /
-                    (d.get_center()[1] - dL.get_center()[1])
+                        (d.get_center()[1] - dL.get_center()[1])
                     )
                 ),
                 about_point=d.get_center()
-            ).scale(
+            )
+            .scale(
                 0.20,
                 about_point=d.get_center()
             )
@@ -67,6 +78,11 @@ class CircleTheorems(Scene):
         )
         self.wait(0.7)
         self.play(
+            Rotate(d, -60 * DEGREES, about_point=ORIGIN),
+            run_time=1.7
+        )
+        self.wait(0.7)
+        self.play(
             Rotate(d, 65 * DEGREES, about_point=ORIGIN),
             run_time=1.7
         )
@@ -75,3 +91,5 @@ class CircleTheorems(Scene):
             Rotate(d, -200 * DEGREES, about_point=ORIGIN),
             run_time=5.1
         )
+
+

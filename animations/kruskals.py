@@ -10,7 +10,7 @@ class KruskalsIntro(Scene):
                    "the greedy algorithm", font="futura"
                    )
         text2 = Tex("it is used to find the Minimum Spanning Tree.",
-                    font="") \
+                    font="futura") \
             .next_to(text, DOWN)
         self.add(
             text,
@@ -103,6 +103,8 @@ class KruskalsExample2(Scene):
                  ("E", "H"),
                  ("G", "H")]
 
+        edges1 = [("A", "B")]
+
         weight = {("A", "B"): [5, (-0.35, -0.35)], ("A", "C"): [4, (0.35, 0.5)],
                   ("A", "D"): [8, (-0.35, 0.35)], ("B", "C"): [3, (0.35, 0)],
                   ("B", "F"): [6, (0, 0.5)], ("C", "D"): [5, (0.35, -0.35)],
@@ -124,44 +126,136 @@ class KruskalsExample2(Scene):
         BasicGraph.wait(self, 2)
         self.play(MoveToTarget(g1))
 
+        g1_elements = BasicGraph.decompose_graph(g1)
+        list_of_scenes = []
+        for test in range(len(edges) - 1):
+            scenes = VGroup(*g1_elements[test])
+            if not list_of_scenes:
+                final_scene = scenes.scale(0.65).move_to(np.array([4, 3, 0]))
+            else:
+                final_scene = scenes.scale(0.65) \
+                    .next_to(list_of_scenes[-1], DOWN)
+
+            list_of_scenes.append(final_scene)
+        group_scenes = VGroup(*list_of_scenes)
+
+        g2 = BasicGraph(
+            vertices=vertices,
+            edges=edges,
+            vertex_and_label_scale=1.3,
+            weight=weight,
+            edge_default=DashedLine()
+
+        ).scale(0.5, about_point=ORIGIN).shift(1.5 * LEFT + 1 * DOWN) \
+            .save_state()
+
+        self.add(g2)
+        self.play(Uncreate(g1), Write(group_scenes))
+        BasicGraph.wait(self, 3)
+
+        edges = [("A", "C"), ("C", "D"), ("B", "C"), ("B", "F"),
+                 ("E", "F"), ("E", "G"), ("G", "H")]
+
+        g3 = BasicGraph(
+            vertices=vertices,
+            edges=edges,
+            vertex_and_label_scale=1.3,
+            weight=weight,
+        ).scale(0.5, about_point=ORIGIN).shift(1.5 * LEFT + 1 * DOWN) \
+            .save_state()
+
+        self.remove(g2)
+        self.play(Write(g3))
+
 
 class KruskalsExample1(Scene):
 
     def construct(self):
+
+        # these are the defined vertices edges and weights of the graph
         vertices = {"A": (-8, 2), "B": [-3, 5], "C": [0, 0],
                     "D": [-3, -2], "E": [1, -2], "F": [3, 2]}
 
-        edges = (("A", "B"), ("A", "D"), ("B", "C"), ("B", "F"), ("C", "D"),
-                 ("C", "F"), ("E", "F"), ("D", "E"))
+        edges = [("A", "B"), ("A", "D"), ("B", "C"), ("B", "F"), ("C", "D"),
+                 ("C", "F"), ("E", "F"), ("D", "E")]
 
-        weights = {("A", "B"): [5, (-0.35, 0.6)], ("A", "D"): [6, (-0.5, -0.5)],
-                   ("B", "C"): [6, (-0.35, -0.6)], ("B", "F"): [7, (0.5, 0.5)],
-                   ("C", "D"): [3, (-0.5, 0.5)], ("C", "F"): [3, (-0.5, 0.5)],
-                   ("E", "F"): [5, (0.5, 0)], ("D", "E"): [4, (0, -0.5)]}
+        weight = {("A", "B"): [5, (-0.35, 0.6)], ("A", "D"): [6, (-0.5, -0.5)],
+                  ("B", "C"): [6, (-0.35, -0.6)], ("B", "F"): [7, (0.5, 0.5)],
+                  ("C", "D"): [3, (-0.5, 0.5)], ("C", "F"): [3, (-0.5, 0.5)],
+                  ("E", "F"): [5, (0.5, 0)], ("D", "E"): [4, (0, -0.5)]}
 
+        # Creates the first graph
         g1 = BasicGraph(
             vertices=vertices,
             edges=edges,
             vertex_and_label_scale=1.3,
-            weight=weights
+            weight=weight
 
         ).scale(0.5, about_point=ORIGIN).shift(RIGHT).save_state()
 
+        # Displays first graph in the centre
         self.play(ShowCreation(g1))
         BasicGraph.wait(self, 4)
         g1.generate_target()
-        g1.target.shift(3 * LEFT + 2 * DOWN).scale(1, about_point=ORIGIN)
+        g1.target.shift(2.5 * LEFT + 1 * DOWN)
         BasicGraph.wait(self, 2)
         self.play(MoveToTarget(g1))
+        BasicGraph.wait(self, 4)
 
-class temp(Scene):
-    def construct(self):
-        c = Circle()
-        s = Square()
-        a = Dot()
-        d = s.get_critical_point(LEFT)
-        a.next_to(d, buff=0)
-        self.add(s)
-        self.add(a)
+        g1_elements = BasicGraph.decompose_graph(g1)
+        ascending_list = sorted(g1_elements, key=lambda x: (x[0]))
+        for x in g1_elements:
+            del x[0]
 
+        list_of_scenes = []
+        for test in range(len(edges)):
+            scenes = VGroup(*g1_elements[test])
+            if not list_of_scenes:
+                final_scene = scenes.scale(0.45).move_to(np.array([4, 3, 0]))
+            else:
+                final_scene = scenes.scale(0.45) \
+                    .next_to(list_of_scenes[-1], DOWN)
 
+            list_of_scenes.append(final_scene)
+        group_scenes = VGroup(*list_of_scenes)
+
+        g2 = BasicGraph(
+            vertices=vertices,
+            edges=edges,
+            vertex_and_label_scale=1.3,
+            weight=weight,
+            edge_default=DashedLine()
+
+        ).scale(0.5, about_point=ORIGIN).shift(1.5 * LEFT + 1 * DOWN) \
+            .save_state()
+
+        self.add(g2)
+        self.play(Uncreate(g1), Write(group_scenes))
+        BasicGraph.wait(self, 3)
+
+        list_of_scenes2 = []
+        for test in range(len(edges)):
+            scenes = VGroup(*ascending_list[test])
+            if not list_of_scenes2:
+                final_scene = scenes.move_to(np.array([4, 3, 0]))
+            else:
+                final_scene = scenes \
+                    .next_to(list_of_scenes2[-1], DOWN)
+
+            list_of_scenes2.append(final_scene)
+        group_scenes2 = VGroup(*list_of_scenes2)
+
+        self.play(Write(group_scenes2))
+        BasicGraph.wait(self, 3)
+
+        edges = [("A", "B"), ("A", "D"), ("C", "D"), ("C", "F"), ("D", "E")]
+        g3 = BasicGraph(
+            vertices=vertices,
+            edges=edges,
+            vertex_and_label_scale=1.3,
+            weight=weight,
+        ).scale(0.5, about_point=ORIGIN).shift(1.5 * LEFT + 1 * DOWN) \
+            .save_state()
+
+        self.remove(g2)
+        self.play(Write(g3))

@@ -92,4 +92,77 @@ class CircleTheorems(Scene):
             run_time=5.1
         )
 
+    def theorem_1(self):
+            circle = Circle().scale(3).set_color(WHITE) #default circle with radius 3 in the manim grid
+            centerDot = Dot()
+            fixedEdgeDot = Dot().shift(3*UP)
 
+            base = VGroup(
+                circle, centerDot, fixedEdgeDot
+            )
+
+            leftDot = Dot().shift(3*DOWN)
+            rightDot = Dot().shift(3*DOWN)
+
+            moving_line1 = always_redraw(
+                lambda: Line(fixedEdgeDot.get_center(), rightDot.get_center())
+            )
+            moving_line2 = always_redraw(
+                lambda: Line(fixedEdgeDot.get_center(), leftDot.get_center())
+            )
+            moving_line3 = always_redraw(
+                lambda: Line(centerDot.get_center(), leftDot.get_center())
+            )
+            moving_line4 = always_redraw(
+                lambda: Line(centerDot.get_center(), rightDot.get_center())
+            )
+            moving_lines = VGroup(moving_line1, moving_line2, moving_line3, moving_line4)
+
+            updating_angle1 = always_redraw(
+                lambda :
+                    VGroup (
+                    Arc(
+                    arc_center=fixedEdgeDot.get_center(), 
+                    radius=0.5, 
+                    start_angle= moving_line1.get_angle(), 
+                    angle = (moving_line2.get_angle()-moving_line1.get_angle())/2
+                    ),
+                    Arc(
+                    arc_center=fixedEdgeDot.get_center(), 
+                    radius=0.5, 
+                    start_angle= moving_line2.get_angle()-((moving_line2.get_angle()-moving_line1.get_angle())/2), 
+                    angle = (moving_line2.get_angle()-moving_line1.get_angle())/2
+                    )
+                    )
+            )
+            updating_angle2 = always_redraw(
+                lambda :
+                    VGroup ( 
+                    Arc (
+                        arc_center=centerDot.get_center(),
+                        radius=0.5,
+                        start_angle= moving_line4.get_angle(),
+                        angle= (moving_line3.get_angle() - moving_line4.get_angle())/2
+                    ),
+                    Arc (
+                        arc_center=centerDot.get_center(),
+                        radius=0.5,
+                        start_angle= moving_line3.get_angle() - ((moving_line3.get_angle() - moving_line4.get_angle())/2),
+                        angle= (moving_line3.get_angle() - moving_line4.get_angle())/2
+                    )
+                    )
+            )
+
+            updating_angles = VGroup(updating_angle1, updating_angle2)
+
+            self.play(Write(base), Write(moving_lines), Write(leftDot), Write(rightDot), Write(updating_angles))
+            self.wait(0.7)
+            self.play(
+                Rotate(leftDot, 90 * DEGREES, about_point=ORIGIN),
+                Rotate(rightDot, -90 * DEGREES, about_point=ORIGIN),
+                run_time=2.8
+            )
+            self.wait(0.7)
+
+            #(-pi,pi]
+            #once working, replace arcs with sectors so can shade the region
